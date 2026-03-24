@@ -21,15 +21,24 @@ app = FastAPI()
 app.include_router(admin_router)
 app.include_router(appointments_router)
 
-def _get_cors_origins() -> list[str]:
-    raw = os.getenv("CORS_ORIGINS", "").strip()
-    if not raw:
-        return ["*"]
-    return [origin.strip() for origin in raw.split(",") if origin.strip()]
+def _get_cors_config() -> tuple[list[str], str | None]:
+    raw_origins = os.getenv("CORS_ORIGINS", "").strip()
+    raw_regex = os.getenv("CORS_ORIGIN_REGEX", "").strip()
+
+    origins = [origin.strip() for origin in raw_origins.split(",") if origin.strip()] if raw_origins else []
+    origin_regex = raw_regex or None
+
+    if not origins and not origin_regex:
+        return ["*"], None
+
+    return origins, origin_regex
+
+cors_origins, cors_origin_regex = _get_cors_config()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=_get_cors_origins(),
+    allow_origins=cors_origins,
+    allow_origin_regex=cors_origin_regex,
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -72,4 +81,3 @@ async def on_startup():
 
     # Launch the daily midnight scheduler as a background task
     asyncio.create_task(_daily_completion_scheduler())
-
