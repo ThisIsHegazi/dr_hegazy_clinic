@@ -2,6 +2,7 @@ import asyncio
 import logging
 import os
 from datetime import datetime, timedelta
+from urllib.parse import urlsplit
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -21,11 +22,39 @@ app = FastAPI()
 app.include_router(admin_router)
 app.include_router(appointments_router)
 
+def _normalize_origin(origin: str) -> str:
+    origin = origin.strip()
+    if not origin or origin == "*":
+        return origin
+
+    if "://" not in origin:
+        return origin.rstrip("/")
+
+    try:
+        parts = urlsplit(origin)
+    except ValueError:
+        return origin.rstrip("/")
+
+    if parts.scheme and parts.netloc:
+        return f"{parts.scheme}://{parts.netloc}"
+
+    return origin.rstrip("/")
+
+
 def _get_cors_config() -> tuple[list[str], str | None]:
     raw_origins = os.getenv("CORS_ORIGINS", "").strip()
     raw_regex = os.getenv("CORS_ORIGIN_REGEX", "").strip()
 
-    origins = [origin.strip() for origin in raw_origins.split(",") if origin.strip()] if raw_origins else []
+    origins = []
+    if raw_origins:
+        for origin in raw_origins.split(","):
+            normalized = _normalize_origin(origin)
+            if normalized:
+                origins.append(normalized)
+
+    # De-duplicate while preserving order
+    seen = set()
+    origins = [o for o in origins if not (o in seen or seen.add(o))]
     origin_regex = raw_regex or None
 
     if not origins and not origin_regex:
