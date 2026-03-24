@@ -41,7 +41,8 @@
     <script src="../../static/js/config.js"></script>
     <script src="../../static/js/api.js"></script>
     <script>
-        const hasBackend = Boolean((window.API_BASE_URL || '').trim()) || (location.protocol !== 'file:' && location.protocol !== 'about:');
+        const isFile = location.protocol === 'file:';
+        const hasBackend = Boolean((window.API_BASE_URL || '').trim()) || (!isFile && location.protocol !== 'about:');
         const errorBox = document.getElementById('errorBox');
         const loginBtn = document.getElementById('loginBtn');
 
@@ -75,7 +76,8 @@
                 if (res.ok) {
                     const data = await res.json();
                     localStorage.setItem('adminToken', data.access_token);
-                    window.location.href = '../index.html';
+                    const dashboardUrl = isFile ? '../index.html' : '/admin';
+                    window.location.href = dashboardUrl;
                 } else {
                     errorBox.textContent = 'بيانات الدخول غير صحيحة';
                     errorBox.style.display = 'block';

@@ -90,8 +90,9 @@
     <script src="../static/js/api.js"></script>
     <script>
         const token = localStorage.getItem('adminToken');
+        const isFile = location.protocol === 'file:';
         if (!token) {
-            window.location.href = './login/index.html';
+            window.location.href = isFile ? './login/index.html' : '/admin/login';
         }
 
         async function fetchAppointments() {
@@ -170,7 +171,7 @@
 
         function logout() {
             localStorage.removeItem('adminToken');
-            window.location.href = './login/index.html';
+            window.location.href = isFile ? './login/index.html' : '/admin/login';
         }
 
         function showError(msg) {
