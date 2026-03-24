@@ -1,0 +1,18 @@
+[project]
+name = "clinic-appointments-manager"
+version = "0.1.0"
+description = "Add your description here"
+readme = "../README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "bcrypt<4.0.0",
+    "fastapi[all]>=0.135.1",
+    "passlib>=1.7.4",
+    "psycopg[binary]>=3.3.3",
+    "pyjwt>=2.12.1",
+    "python-dotenv>=1.0.1",
+    "python-multipart>=0.0.22",
+    "pytz>=2026.1.post1",
+    "sqlmodel>=0.0.37",
+    "supabase>=2.28.2",
+]

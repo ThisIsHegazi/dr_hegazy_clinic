@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>تسجيل الدخول - لوحة التحكم</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../../static/css/style.css" />
+    <style>
+        body { background-color: var(--bg-color); height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .login-card { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 100%; max-width: 400px; }
+        .login-card h2 { text-align: center; color: var(--primary); margin-bottom: 8px; font-weight: 700; }
+        .login-card p { text-align: center; color: var(--text-muted); margin-bottom: 30px; }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <div style="text-align: center; font-size: 40px; margin-bottom: 10px;">🏥</div>
+        <h2>لوحة تحكم العيادة</h2>
+        <p>الرجاء تسجيل الدخول للمتابعة</p>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">اسم المستخدم</label>
+                <input type="text" id="username" name="username" required placeholder="أدخل اسم المستخدم" />
+            </div>
+            <div class="form-group" style="margin-bottom: 24px;">
+                <label for="password">كلمة المرور</label>
+                <input type="password" id="password" name="password" required placeholder="أدخل كلمة المرور" />
+            </div>
+            
+            <div id="errorBox" style="display: none; color: var(--danger); font-size: 14px; margin-bottom: 16px; text-align: center;"></div>
+            
+            <button type="submit" class="btn btn-primary btn-full" id="loginBtn">
+                <span class="btn-text">تسجيل الدخول</span>
+                <span class="btn-spinner" style="display: none;">⏳ جاري التحقق...</span>
+            </button>
+        </form>
+    </div>
+
+    <script src="../../static/js/config.js"></script>
+    <script src="../../static/js/api.js"></script>
+    <script>
+        const hasBackend = Boolean((window.API_BASE_URL || '').trim()) || (location.protocol !== 'file:' && location.protocol !== 'about:');
+        const errorBox = document.getElementById('errorBox');
+        const loginBtn = document.getElementById('loginBtn');
+
+        if (!hasBackend) {
+            errorBox.textContent = 'الخادم غير متصل. شغّل السيرفر أو اضبط API_BASE_URL.';
+            errorBox.style.display = 'block';
+            loginBtn.disabled = true;
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!hasBackend) return;
+            const btn = document.getElementById('loginBtn');
+            
+            btn.querySelector('.btn-text').style.display = 'none';
+            btn.querySelector('.btn-spinner').style.display = 'inline';
+            btn.disabled = true;
+            errorBox.style.display = 'none';
+            
+            const formData = new URLSearchParams();
+            formData.append('username', document.getElementById('username').value);
+            formData.append('password', document.getElementById('password').value);
+            
+            try {
+            const res = await fetch(apiUrl('/api/admin/token'), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formData.toString()
+            });
+                
+                if (res.ok) {
+                    const data = await res.json();
+                    localStorage.setItem('adminToken', data.access_token);
+                    window.location.href = '../index.html';
+                } else {
+                    errorBox.textContent = 'بيانات الدخول غير صحيحة';
+                    errorBox.style.display = 'block';
+                }
+            } catch (err) {
+                errorBox.textContent = 'تأكد من اتصالك بالانترنت';
+                errorBox.style.display = 'block';
+            } finally {
+                btn.querySelector('.btn-text').style.display = 'inline';
+                btn.querySelector('.btn-spinner').style.display = 'none';
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
