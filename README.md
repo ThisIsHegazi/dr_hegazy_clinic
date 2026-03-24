@@ -165,5 +165,5 @@ See `documentation.md` for full setup, database schema, and detailed API documen
 | Slot duration           | 20 minutes                                                             |
 | Daily appointment limit | 18 per day (derived from work hours and slot duration)                  |
 | Duplicate booking       | Not allowed while a non-completed appointment exists                   |
-| Auto-completion         | Past appointments are marked complete at Cairo midnight and on startup  |
+| Auto-completion         | Past appointments are marked complete at Cairo midnight                 |
 | Timezone                | All logic uses Africa/Cairo                                             |

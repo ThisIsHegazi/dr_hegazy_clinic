@@ -54,6 +54,12 @@ create table if not exists appointments (
   created_at timestamptz not null default now()
 );
 
+create index if not exists ix_appointments_scheduled_at
+  on appointments (scheduled_at);
+
+create index if not exists ix_appointments_phone_created
+  on appointments (phone_number, created_at);
+
 create table if not exists admins (
   id bigserial primary key,
   username text unique not null,
@@ -61,6 +67,11 @@ create table if not exists admins (
   created_at timestamptz not null default now()
 );
 ```
+
+Index note:
+- When `DB_BACKEND=supabase`, run the SQL above in Supabase SQL Editor (one-time).
+- When `DB_BACKEND=sql`, new databases get indexes from SQLModel metadata on startup.
+- Existing databases still need a one-time migration (`create index if not exists ...`).
 
 **Data Model**
 Appointments:
@@ -83,7 +94,7 @@ Admins:
 - Slot duration: 20 minutes
 - Daily capacity: 18 appointments (derived from working hours and slot length)
 - If today is not available, the API suggests the next available slot
-- Past appointments are marked completed at Cairo midnight and on startup
+- Past appointments are marked completed by the daily Cairo-midnight scheduler
 
 **Authentication**
 Admin endpoints require a bearer token.
@@ -253,5 +264,5 @@ Errors are returned as JSON with either a string `detail` or an object `detail` 
 - Admin login token is stored in `localStorage` as `adminToken`
 
 **Operational Notes**
-- The scheduler runs at Cairo midnight and on startup to mark past appointments as completed.
+- The scheduler runs at Cairo midnight to mark past appointments as completed.
 - All time calculations use the Africa/Cairo timezone.

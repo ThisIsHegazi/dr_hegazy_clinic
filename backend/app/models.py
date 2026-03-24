@@ -1,5 +1,6 @@
 from datetime import datetime
 import os
+from sqlalchemy import Index
 from sqlmodel import SQLModel, Field, create_engine
 from app.services import get_current_cairo_time
 
@@ -16,9 +17,12 @@ class Appointments(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     name: str
     phone_number: str
-    scheduled_at: datetime = Field(default_factory=get_current_cairo_time)
+    scheduled_at: datetime = Field(default_factory=get_current_cairo_time, index=True)
     completed: bool = False
     created_at: datetime = Field(default_factory=get_current_cairo_time)
+    __table_args__ = (
+        Index("ix_appointments_phone_created", "phone_number", "created_at"),
+    )
 
 
 class Admins(SQLModel, table=True):

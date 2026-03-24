@@ -101,12 +101,6 @@ async def on_startup():
     if engine is not None:
         create_all_db_and_tables()
 
-    # Run once on startup to catch any appointments missed during downtime
-    try:
-        updated = mark_past_appointments_completed()
-        logger.info("Startup: marked %d past appointment(s) as completed.", updated)
-    except Exception as exc:
-        logger.error("Startup completion check error: %s", exc)
-
-    # Launch the daily midnight scheduler as a background task
+    # Launch the daily midnight scheduler as a background task to avoid
+    # adding cleanup work to the cold-start request path.
     asyncio.create_task(_daily_completion_scheduler())
