@@ -22,6 +22,12 @@ app = FastAPI()
 app.include_router(admin_router)
 app.include_router(appointments_router)
 
+@app.get("/ping")
+def ping():
+    """Keep-alive endpoint to wake up the serverless function."""
+    return {"status": "awake"}
+
+
 def _normalize_origin(origin: str) -> str:
     origin = origin.strip()
     if not origin or origin == "*":

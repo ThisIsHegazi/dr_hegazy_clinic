@@ -139,5 +139,11 @@
   <script src="./static/js/config.js"></script>
   <script src="./static/js/api.js"></script>
   <script src="./static/js/main.js"></script>
+  <script>
+    // Prefetch to wake up the backend server from cold start
+    if (typeof apiUrl === 'function') {
+      fetch(apiUrl('/ping')).catch(function() {});
+    }
+  </script>
 </body>
 </html>
