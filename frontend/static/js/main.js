@@ -453,7 +453,5 @@ document.getElementById('cancelForm').addEventListener('submit', async (e) => {
 // ===== NAVBAR SCROLL EFFECT =====
 window.addEventListener('scroll', () => {
   const navbar = document.querySelector('.navbar');
-  navbar.style.boxShadow = window.scrollY > 20
-    ? '0 4px 20px rgba(0,0,0,0.12)'
-    : '0 1px 3px rgba(0,0,0,0.08)';
+  if (navbar) navbar.classList.toggle('scrolled', window.scrollY > 20);
 });

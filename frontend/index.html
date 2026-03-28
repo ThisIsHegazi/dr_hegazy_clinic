@@ -27,16 +27,49 @@
         <li><a href="./book/index.html">حجز موعد</a></li>
         <li><a href="#contact">تواصل معنا</a></li>
       </ul>
-      <div style="display: flex; gap: 12px; align-items: center;">
-        <a href="./admin/login/index.html" class="btn btn-outline nav-cta" style="padding: 10px 20px; border-color: var(--primary); color: var(--primary);">الإدارة</a>
+      <div class="nav-actions">
+        <a href="./admin/login/index.html" class="btn btn-outline nav-cta hide-sm" style="padding: 9px 18px;">الإدارة</a>
         <a href="./book/index.html" class="btn btn-primary nav-cta">احجز الآن</a>
+        <button class="hamburger" id="hamburger" aria-label="قائمة التنقل" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
       </div>
     </div>
   </nav>
 
+  <!-- MOBILE MENU -->
+  <div class="mobile-menu" id="mobileMenu">
+    <div class="mobile-menu-backdrop" id="mobileBackdrop"></div>
+    <div class="mobile-menu-panel">
+      <div class="mobile-menu-header">
+        <div class="logo">
+          <div class="logo-icon">&#x1F3E5;</div>
+          <div><div class="logo-name">عيادة حجازي</div></div>
+        </div>
+        <button class="mobile-menu-close" id="mobileClose">&#x2715;</button>
+      </div>
+      <ul class="mobile-nav-links">
+        <li><a href="#hero"              onclick="closeMobileMenu()">&#x1F3E0; الرئيسية</a></li>
+        <li><a href="#about"             onclick="closeMobileMenu()">&#x2139;&#xFE0F; عن العيادة</a></li>
+        <li><a href="./book/index.html"  onclick="closeMobileMenu()">&#x1F4C5; حجز موعد</a></li>
+        <li><a href="#contact"           onclick="closeMobileMenu()">&#x1F4DE; تواصل معنا</a></li>
+      </ul>
+      <div class="mobile-nav-actions">
+        <a href="./book/index.html"             class="btn btn-primary btn-full">احجز موعدك الآن</a>
+        <a href="./admin/login/index.html"      class="btn btn-outline btn-full">لوحة الإدارة</a>
+      </div>
+    </div>
+  </div>
+
   <!-- HERO -->
   <section id="hero" class="hero">
     <div class="hero-bg"></div>
+    <div class="hero-shapes">
+      <div class="hero-shape"></div>
+      <div class="hero-shape"></div>
+      <div class="hero-shape"></div>
+      <div class="hero-shape"></div>
+    </div>
     <div class="container hero-content">
       <div class="hero-badge">&#x2B50; أفضل رعاية طبية في مدينة نصر</div>
       <h1 class="hero-title">عيادة <span class="highlight">حجازي</span><br/>لأمراض الغدد الصماء</h1>
@@ -144,6 +177,32 @@
     if (typeof apiUrl === 'function') {
       fetch(apiUrl('/ping')).catch(function() {});
     }
+    // Navbar scroll effect
+    window.addEventListener('scroll', function () {
+      document.querySelector('.navbar').classList.toggle('scrolled', window.scrollY > 20);
+    });
+    // Mobile menu
+    var hamburger = document.getElementById('hamburger');
+    var mobileMenu = document.getElementById('mobileMenu');
+    var mobileClose = document.getElementById('mobileClose');
+    var mobileBackdrop = document.getElementById('mobileBackdrop');
+    function openMobileMenu() {
+      mobileMenu.classList.add('open');
+      hamburger.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      hamburger.setAttribute('aria-expanded', 'true');
+    }
+    function closeMobileMenu() {
+      mobileMenu.classList.remove('open');
+      hamburger.classList.remove('open');
+      document.body.style.overflow = '';
+      hamburger.setAttribute('aria-expanded', 'false');
+    }
+    hamburger.addEventListener('click', function () {
+      mobileMenu.classList.contains('open') ? closeMobileMenu() : openMobileMenu();
+    });
+    mobileClose.addEventListener('click', closeMobileMenu);
+    mobileBackdrop.addEventListener('click', closeMobileMenu);
   </script>
 </body>
 </html>
